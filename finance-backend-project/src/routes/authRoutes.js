@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const roleCheck = require('../middleware/roleCheck');
 
 const router = express.Router();
 
@@ -54,6 +55,11 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
+});
+
+// Example of applying role-based access control
+router.get('/admin-only', roleCheck(['Admin']), (req, res) => {
+  res.status(200).json({ message: 'Welcome, Admin!' });
 });
 
 module.exports = router;
