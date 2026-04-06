@@ -1,9 +1,6 @@
 const express = require('express');
 const app = express();
-// Load environment and connect to DB
 require('dotenv').config();
-const connectDB = require('./config/db');
-connectDB();
 
 const authRoutes = require('./routes/authRoutes');
 const recordRoutes = require('./routes/recordRoutes');
@@ -12,22 +9,25 @@ const authMiddleware = require('./middleware/auth');
 
 app.use(express.json());
 
-// Public routes
 console.log('Setting up public routes');
-app.use('/auth', authRoutes); // Mount all auth routes under /auth
+app.use('/auth', authRoutes);
 
-// Apply authentication middleware for all other routes except public ones
-console.log('Applying authentication middleware');
 app.use((req, res, next) => {
   if (req.path.startsWith('/auth/register') || req.path.startsWith('/auth/login')) {
-    return next(); // Skip middleware for public routes
+    return next();
   }
   authMiddleware(req, res, next);
 });
 
-// Protected routes
 console.log('Setting up protected routes');
 app.use('/records', recordRoutes);
 app.use('/dashboard', dashboardRoutes);
 
-module.exports = app; // Export the app instance for testing
+const connectDB = require('./config/db');
+const startServer = async () => {
+  await connectDB();
+  const PORT = process.env.PORT || 5000;
+  return app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+};
+
+module.exports = { app, startServer };
