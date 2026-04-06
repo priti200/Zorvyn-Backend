@@ -1,5 +1,10 @@
 const express = require('express');
 const app = express();
+// Load environment and connect to DB
+require('dotenv').config();
+const connectDB = require('./config/db');
+connectDB();
+
 const authRoutes = require('./routes/authRoutes');
 const recordRoutes = require('./routes/recordRoutes');
 const authMiddleware = require('./middleware/auth');
