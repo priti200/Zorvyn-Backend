@@ -30,4 +30,8 @@ const startServer = async () => {
   return app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 };
 
+if (require.main === module) {
+  startServer();
+}
+
 module.exports = { app, startServer };
