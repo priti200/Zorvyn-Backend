@@ -29,6 +29,7 @@ router.post('/register', async (req, res) => {
     console.log('Saving new user to the database...');
     await newUser.save();
 
+    console.log('Password hash stored in database:', newUser.password);
     console.log('User registered successfully:', newUser);
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
@@ -53,14 +54,14 @@ router.post('/login', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log('Stored password hash:', user.password);
-    console.log('Provided password:', password);
+    // Verify password
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log('Password comparison result:', isMatch);
     if (!isMatch) {
       console.log('Invalid credentials for user:', email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    console.log('Hash retrieved from database during login:', user.password);
 
     // Generate JWT
     console.log('Generating JWT for user:', user._id);
