@@ -7,6 +7,7 @@ connectDB();
 
 const authRoutes = require('./routes/authRoutes');
 const recordRoutes = require('./routes/recordRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const authMiddleware = require('./middleware/auth');
 
 app.use(express.json());
@@ -27,5 +28,6 @@ app.use((req, res, next) => {
 // Protected routes
 console.log('Setting up protected routes');
 app.use('/records', recordRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 module.exports = app; // Export the app instance for testing

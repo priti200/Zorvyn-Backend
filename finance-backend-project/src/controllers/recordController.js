@@ -2,11 +2,11 @@ const recordService = require('../services/recordService');
 
 async function createRecord(req, res) {
   try {
-    const { title, amount, type, date } = req.body;
+    const { title, amount, type, category, notes, date } = req.body;
     const userId = req.user && req.user.id;
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-    const record = await recordService.createRecord({ title, amount, type, userId, date });
+    const record = await recordService.createRecord({ title, amount, type, category, notes, userId, date });
     res.status(201).json(record);
   } catch (err) {
     console.error('createRecord error:', err);
@@ -19,8 +19,12 @@ async function getAllRecords(req, res) {
     const userId = req.user && req.user.id;
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-    const records = await recordService.getRecordsByUser(userId);
-    res.status(200).json(records);
+    const { startDate, endDate, category, type, page, limit } = req.query;
+    const filters = { startDate, endDate, category, type };
+    const options = { page: parseInt(page) || 1, limit: parseInt(limit) || 20 };
+
+    const result = await recordService.getRecordsByUser(userId, filters, options);
+    res.status(200).json(result);
   } catch (err) {
     console.error('getAllRecords error:', err);
     res.status(500).json({ message: 'Internal Server Error', error: err.message });

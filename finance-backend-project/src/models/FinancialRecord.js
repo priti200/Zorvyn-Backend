@@ -14,6 +14,14 @@ const financialRecordSchema = new mongoose.Schema({
     enum: ['income', 'expense'],
     required: true,
   },
+  category: {
+    type: String,
+    default: 'other',
+  },
+  notes: {
+    type: String,
+    default: '',
+  },
   date: {
     type: Date,
     default: Date.now,
