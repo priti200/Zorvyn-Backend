@@ -1,13 +1,14 @@
 const express = require('express');
 const roleCheck = require('../middleware/roleCheck');
 const auth = require('../middleware/auth');
+const validation = require('../middleware/validation');
 const recordController = require('../controllers/recordController');
 
 const router = express.Router();
 
 // All routes here require authentication middleware (applied in server.js globally)
 
-router.post('/', auth, roleCheck(['Admin', 'Analyst']), recordController.createRecord);
+router.post('/', auth, roleCheck(['Admin', 'Analyst']), validation.validateRecord, recordController.createRecord);
 router.get('/', auth, roleCheck(['Admin', 'Analyst', 'Viewer']), recordController.getAllRecords);
 router.get('/:id', auth, roleCheck(['Admin', 'Analyst', 'Viewer']), recordController.getRecord);
 router.put('/:id', auth, roleCheck(['Admin']), recordController.updateRecord);

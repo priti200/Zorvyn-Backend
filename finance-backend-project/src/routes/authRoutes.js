@@ -3,12 +3,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const roleCheck = require('../middleware/roleCheck');
+const validation = require('../middleware/validation');
 
 const router = express.Router();
 
 // Register a new user
 console.log('Registering /auth/register route');
-router.post('/register', async (req, res) => {
+router.post('/register', validation.validateRegister, async (req, res) => {
   try {
     console.log('Received request for /auth/register:', req.body);
     const { username, email, password, role } = req.body;
@@ -40,7 +41,7 @@ router.post('/register', async (req, res) => {
 
 // Login a user
 console.log('Registering /auth/login route');
-router.post('/login', async (req, res) => {
+router.post('/login', validation.validateLogin, async (req, res) => {
   try {
     const { email, password } = req.body;
 
