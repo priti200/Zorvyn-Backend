@@ -6,8 +6,12 @@ const authRoutes = require('./routes/authRoutes');
 const recordRoutes = require('./routes/recordRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const authMiddleware = require('./middleware/auth');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 
 app.use(express.json());
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/', (req, res) => {
   res.json({ message: 'Finance Backend API', version: '1.0.0' });

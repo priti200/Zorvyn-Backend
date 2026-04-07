@@ -7,81 +7,116 @@ const validation = require('../middleware/validation');
 
 const router = express.Router();
 
-// Register a new user
-console.log('Registering /auth/register route');
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [Viewer, Analyst, Admin]
+ *                 default: Viewer
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: User already exists
+ */
 router.post('/register', validation.validateRegister, async (req, res) => {
   try {
-    console.log('Received request for /auth/register:', req.body);
     const { username, email, password, role } = req.body;
 
-    console.log('Checking if user already exists in the database...');
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      console.log('User already exists:', email);
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    console.log('Hashing password...');
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log('Password hashed successfully:', hashedPassword);
 
-    // Create new user
     const newUser = new User({ username, email, password: hashedPassword, role });
-    console.log('Saving new user to the database...');
     await newUser.save();
 
-    console.log('Password hash stored in database:', newUser.password);
-    console.log('User registered successfully:', newUser);
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    console.error('Error in /auth/register:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
-// Login a user
-console.log('Registering /auth/login route');
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials
+ */
 router.post('/login', validation.validateLogin, async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log('Received request for /auth/login:', req.body);
-
-    // Check if user exists
-    console.log('Checking if user exists in the database...');
     const user = await User.findOne({ email });
     if (!user) {
-      console.log('User not found:', email);
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Verify password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log('Invalid credentials for user:', email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    console.log('Hash retrieved from database during login:', user.password);
-
-    // Generate JWT
-    console.log('Generating JWT for user:', user._id);
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
-    console.log('JWT generated successfully:', token);
 
     res.status(200).json({ token });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
-});
-
-// Example of applying role-based access control
-router.get('/admin-only', roleCheck(['Admin']), (req, res) => {
-  res.status(200).json({ message: 'Welcome, Admin!' });
 });
 
 module.exports = router;
