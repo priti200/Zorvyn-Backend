@@ -9,6 +9,10 @@ const authMiddleware = require('./middleware/auth');
 
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.json({ message: 'Finance Backend API', version: '1.0.0' });
+});
+
 console.log('Setting up public routes');
 app.use('/auth', authRoutes);
 
