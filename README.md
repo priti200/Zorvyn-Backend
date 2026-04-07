@@ -2,6 +2,9 @@
 
 A REST API backend for a finance dashboard system with role-based access control.
 
+**Live API**: https://zorvyn-backend-lw8d.onrender.com/  
+**API Documentation**: https://zorvyn-backend-lw8d.onrender.com/api-docs
+
 ## Features
 
 - **User & Role Management** - Users with roles (Viewer/Analyst/Admin)
@@ -10,6 +13,7 @@ A REST API backend for a finance dashboard system with role-based access control
 - **Role-Based Access Control** - Middleware-based enforcement
 - **Input Validation** - Request validation with error responses
 - **JWT Authentication** - Token-based auth
+- **Interactive API Docs** - Swagger UI for testing endpoints
 
 ## Tech Stack
 
@@ -17,6 +21,7 @@ A REST API backend for a finance dashboard system with role-based access control
 - **Framework**: Express.js
 - **Database**: MongoDB (Mongoose ODM)
 - **Auth**: JWT + bcrypt
+- **API Docs**: Swagger UI
 
 ## Setup
 
@@ -27,7 +32,6 @@ A REST API backend for a finance dashboard system with role-based access control
 ### Installation
 
 ```bash
-cd finance-backend-project
 npm install
 ```
 
@@ -79,25 +83,25 @@ npm test
 | GET | `/dashboard/summary` | Get summary (totals, category-wise) | All |
 | GET | `/dashboard/trends` | Get monthly trends | All |
 
-## Request Examples
+## Quick Start with cURL
 
 ### Register
 ```bash
-curl -X POST http://localhost:5000/auth/register \
+curl -X POST https://zorvyn-backend-lw8d.onrender.com/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"john","email":"john@test.com","password":"123456","role":"Admin"}'
 ```
 
 ### Login
 ```bash
-curl -X POST http://localhost:5000/auth/login \
+curl -X POST https://zorvyn-backend-lw8d.onrender.com/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"john@test.com","password":"123456"}'
 ```
 
 ### Create Record (with token)
 ```bash
-curl -X POST http://localhost:5000/records \
+curl -X POST https://zorvyn-backend-lw8d.onrender.com/records \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"title":"Salary","amount":5000,"type":"income","category":"salary","notes":"Monthly salary"}'
@@ -105,13 +109,13 @@ curl -X POST http://localhost:5000/records \
 
 ### Get Dashboard Summary
 ```bash
-curl http://localhost:5000/dashboard/summary \
+curl https://zorvyn-backend-lw8d.onrender.com/dashboard/summary \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Filter Records
 ```bash
-curl "http://localhost:5000/records?type=expense&category=food&startDate=2024-01-01&endDate=2024-12-31&page=1&limit=10" \
+curl "https://zorvyn-backend-lw8d.onrender.com/records?type=expense&category=food" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -150,17 +154,10 @@ curl "http://localhost:5000/records?type=expense&category=food&startDate=2024-01
 3. **ISO dates**: Dates passed as ISO 8601 format (YYYY-MM-DD)
 4. **Soft delete**: Delete operations are hard deletes (not soft delete)
 
-## Optional Features Not Implemented
-
-- Rate limiting
-- Soft delete functionality  
-- Search support (beyond basic filtering)
-- GraphQL API
-
 ## Testing
 
 Tests use `mongodb-memory-server` for in-memory MongoDB:
-- 8 tests covering auth, records, validation, pagination
+- Tests covering auth, records, validation, pagination
 - Run with `npm test`
 
 ## License
